@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title id="title"></title>
+    <meta name="keywords" content="网页导航">
+    <meta name="description" content="单纯就是一个导航">
+    <link rel="stylesheet" href="{{ url_for('static', filename='img/icon.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap/bootstrap.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jQuery.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='bootstrap/bootstrap.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/slideout.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+	<script src="{{ url_for('static', filename='js/bookmarks.json') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    
+    <nav id="menu" class="menu">
+        <blockquote class="blockquote">▎ 设置</blockquote>
+        <ul>
+            <a href="#">
+                <li class="sidenav-btn" id="night">夜间模式</li>
+            </a>
+            <a href="#">
+                <li class="sidenav-btn" id="bg">干掉/显示壁纸</li>
+            </a>
+            <a target="_blank" href="/admin">
+                <li class="sidenav-btn" id="bg">后台管理</li>
+            </a>
+        </ul>
+        <blockquote class="blockquote">▎ 书签列表</blockquote>
+        <ul id="bookmarks-list">
+            <!-- 这里将使用 JavaScript 从后端获取书签并动态渲染到页面 -->
+        </ul>
+        
+        <p style="width:100%;text-align:center;margin:0 auto;font-size:14px;color:lightgray;">2022-希望是2222 © 
+            <a style="color: lightgray;" href="#">枫亦有忆</a><br>
+            <a style="color: lightgray;" href="http://bilibili.com" target="_blank">备个吉儿案</a>
+        </p>
+    </nav>
+
+    <!-- 主页面 -->
+    <main id="main" class="panel">
+        <!-- 天气 
+        <div id="tp-weather-widget"></div>
+        -->
+
+        <!-- 主容器 -->
+        <div class="container">
+
+            <!-- 侧边栏按钮 -->
+            <img class="slidebtn btn-hamburger js-slideout-toggle" src="{{ url_for('static', filename='img/menu.svg') }}" />
+            <!-- 搜索盒子 -->
+            <div class="search-box">
+                <!-- logo -->
+                <div id="logo">
+                    <div id="state">
+                        <img id="img" src="{{ url_for('static', filename='img/bing.png') }}" />
+                    </div>
+                </div>
+
+                <!-- 搜索框 -->
+                <div class="inputDiv">
+                    <form id="form" action="https://cn.bing.com/search" target="_self" onsubmit="return check()">
+                        <input onmouseover="this.focus()" onfocus="this.select()" id="inputText" type="text" placeholder="Bing搜索..." name="q" size="30" />
+                        <button id="submitButton" class="submitButton" type="submit"></button>
+                    </form>
+                    <!-- 搜索提示词 -->
+                    <div id="searchlist">
+                        <ul id="list"></ul>
+                    </div>
+                </div>
+
+                <!-- 书签、引擎选择器 -->
+                <div id="Select" class="Select" onclick="select()">
+                    <hr>书签
+                    <img src="{{ url_for('static', filename='img/search-change.svg') }}" />
+                </div>
+                <!-- 书签 -->
+                <div id="folder" class="folder">
+                    <ul></ul>
+                </div>
+
+                <!-- 导航引擎 -->
+                <div id="nav" class="nav">
+                    <ul></ul>
+                </div>
+
+                <!-- 更新提示框 -->
+                <div id="alert" class="alert alert-info alert-dismissible" role="alert">
+                    <button type="button" id="closealert" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <strong>有新版本啦！</strong>赶紧清除缓存刷新看下吧！更新内容可查看<a target="_blank" href="https://kksan.top/f5404b68deeb4634b39dac0bc67ec693" class="alert-link">更新日志</a>。
+                </div>
+
+            </div>
+    </main>
+
+
+</body>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/slideout.min.js') }}"></script>
+<script type="text/javascript">
+    var slideout = new Slideout({
+        'panel': document.getElementById('main'),
+        'menu': document.getElementById('menu'),
+        'padding': 290,
+        'tolerance': 70
+    });
+    document.querySelector('.js-slideout-toggle').addEventListener('click',
+        function() {
+            slideout.toggle();
+        });
+    document.querySelector('.menu').addEventListener('click',
+        function(eve) {
+            if (eve.target.nodeName === 'A') {
+                slideout.close();
+            }
+        });
+    $(document).click(function(e) {
+        var Class = $(e.target).attr("class");
+        var Id = $(e.target).attr("id");
+        if (Class == 'panel slideout-panel slideout-panel-left' || Class == 'folder-item col-xs-3 col-sm-2' || Class == 'search-box' || Id == 'inputText' || Id == 'logo') {
+            slideout.close();
+        }
+    });
+</script>
+
+<script>
+    fetch('/get_bookmarks2')
+        .then(response => response.json())
+        .then(data => {
+            const bookmarksList = document.getElementById('bookmarks-list');
+            let currentCategory = '';
+
+            const fragment = document.createDocumentFragment();
+
+            data.forEach(bookmark => {
+                if (bookmark.category !== currentCategory) {
+                    const blockquote = document.createElement('blockquote');
+                    blockquote.className = 'blockquote';
+                    blockquote.textContent = '▎ ' + bookmark.category;
+                    
+                    const ul = document.createElement('ul'); // 创建 ul 元素
+                    ul.appendChild(blockquote); // 将 blockquote 添加到 ul 中
+                    fragment.appendChild(ul); // 将 ul 添加到文档片段中
+
+                    currentCategory = bookmark.category;
+                }
+
+                const a = document.createElement('a');
+                a.target = '_blank';
+                a.href = bookmark.link;
+
+                const li = document.createElement('li');
+                li.className = 'sidenav-btn';
+                li.textContent = bookmark.name;
+
+                const p = document.createElement('p');
+                p.textContent = bookmark.description;
+                
+                li.appendChild(p);
+                a.appendChild(li);
+                fragment.appendChild(a);
+
+                const parentUl = fragment.lastChild; // 获取最后一个 ul
+                parentUl.appendChild(li); // 将 li 添加到当前 ul 中
+            });
+
+            bookmarksList.appendChild(fragment);
+        })
+        .catch(error => console.error('Error:', error));
+</script>
+
+
+
+<script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+</html>

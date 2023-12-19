@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>后台管理系统</title>
+    <!-- 引入 Bootstrap CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- 引入 Flask-Admin CSS 文件 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+    <!-- 引入 Flask-Admin 模板宏 -->
+    {% import 'admin/lib.html' as lib with context %}
+    <!-- 渲染 Flask-Admin 基本布局 -->
+    {{ lib.render_admin_head() }}
+    {{ lib.render_admin_base() }}
+    <!-- 引入 jQuery 和 Bootstrap JS 文件 -->
+    <script src="https://cdn.staticfile.org/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- 引入 Flask-Admin JS 文件 -->
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>
