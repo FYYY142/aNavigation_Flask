@@ -53,9 +53,6 @@ function rgb2hex(rgb) {
 }
 // rgb to hex结束
 
-
-
-
 // 添加书签
 // 发送 AJAX 请求，获取书签数据
 $.ajax({
@@ -85,45 +82,6 @@ $.ajax({
   });
   // 添加书签结束
   
-
-
-
-
-
-/** 
-// 添加书签
-// 加载书签 JSON
-$.getJSON('/static/js/bookmarks.json', function(data) {
-
-  // 遍历 JSON 中的 bookmarks 数组
-  $.each(data.bookmarks, function(i, bookmark) {
-
-    // 拼接书签 HTML
-    var addList = '<li class="folder-item col-xs-3 col-sm-2">' +
-                      '<a target="_blank" href="' + bookmark.link + '">' + 
-                        '<div class="folder-item-box">' + 
-                        '<img class="folder-item-img" style="box-shadow: ' + bookmark.box_shadow + ' 0 14px 12px -8px" src="' + bookmark.icon + '">' +
-                          '<p>' + bookmark.name + '</p>' +
-                        '</div>' +
-                      '</a>' +  
-                  '</li>';
-
-    // 添加到页面
-    $('#folder').append(addList);
-
-  });
-
-});
-    // 添加书签结束 
-**/
-
-
-
-
-
-
-
-
 // 搜索相关
 $(function() {
     var search = {
@@ -275,37 +233,34 @@ $(function() {
         })
         // 搜索相关结束
 
-    // 夜间模式
-    $('#night').click(function() {
-            if (rgb2hex($('#main').css('background-color')) == '#ffffff') {
-                $('#main').css('background-color', '#2f2f33'); //主界面
-                $('#menu').css('background-color', '#5C5C5C'); //侧栏
-                document.getElementById("night").innerHTML = "日间模式";
-                li.css({
-                    "background-color": "#575757",
-                    "color": "#DBDBDB"
-                });
-                blockquote.css('color', '#DBDBDB');
-            } else if (rgb2hex($('#main').css('background-color')) == '#2f2f33') {
-                $('#main').css('background-color', '#ffffff'); //主界面
-                $('#menu').css('background-color', '#EDEDED'); //侧栏
-                document.getElementById("night").innerHTML = "夜间模式";
-                li.css({
-                    "background-color": "#E3E3E3",
-                    "color": "black"
-                });
-                blockquote.css('color', 'black');
-            }
-            var mainbg = rgb2hex($('#main').css('background-color'));
-            var menubg = rgb2hex($('#menu').css('background-color'));
-            var inner = document.getElementById("night").innerHTML;
-            var libg = rgb2hex(li.css('background-color'));
-            var lico = rgb2hex(li.css('color'));
-            var blockquoteco = rgb2hex(blockquote.css('color'));
-            // storage.night = [mainbg, menubg, inner, libg, lico, blockquoteco];
-            // localStorage.clear()
-        })
-        // 夜间模式结束
+    // 展示壁纸/日间模式和关闭壁纸/夜间模式开关
+    $('#night-bg').click(function() {
+        var buttonText = $(this).text();
+        
+        if (buttonText === '展示壁纸') {
+            $('#main').css('background-color', '#ffffff'); // 主界面
+            $('#menu').css('background-color', '#EDEDED'); // 侧栏
+            $('#main').css('background-image', 'url(/static/img/bg-morning.jpg)');
+            $(this).text('夜间模式');
+            // 其他样式修改...
+    
+            // 存储状态
+            storage.nightbg = ['rgb(255, 255, 255)', 'rgb(237, 237, 237)', '展示壁纸', 'url(/static/img/bg-morning.jpg)'];
+        } else {
+            $('#main').css('background-color', '#2f2f33'); // 主界面
+            $('#menu').css('background-color', '#5C5C5C'); // 侧栏
+            $('#main').css('background-image', 'none');
+            $(this).text('展示壁纸');
+            // 恢复其他样式...
+    
+            // 存储状态
+            storage.nightbg = ['#2f2f33', '#5C5C5C', '夜间模式', 'none'];
+        }
+    });
+    
+
+
+
 
     // 更新提示框
     $('#closealert').click(function() {
@@ -314,14 +269,6 @@ $(function() {
         })
         // 更新提示框结束
 
-})
-
-// 显示/干掉壁纸
-var width = $(document).width();
-$('#bg').click(function() {
-    width < 768 ? ($('#main').css('background-image') == 'none' ? ($('#main').css('background-image', 'url(/static/img/bg-xs.jpg)')) : ($('#main').css('background-image', 'none'))) : $('#main').css('background-image') == 'none' ? ($('#main').css('background-image', 'url(/static/img/bg-morning.jpg)')) : ($('#main').css('background-image', 'none'));
-    var background = $('#main').css('background-image');
-    storage.bg = [background];
 })
 
 //检查搜索框是否为空
